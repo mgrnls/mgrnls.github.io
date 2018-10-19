@@ -1,14 +1,16 @@
+/* Colours
+ * =======
+ * Green: #67d36e
+ * White: #f7f7f7
+ * Grey:  #cccccc
+ */
+
 body {
-    margin: 0 0 0 0
+    margin: 0;
+    background-color: #f7f7f7;
 }
 
-div {
-    padding: 30px;
-    max-width: 1000px;
-    margin: auto
-}
-
-p, a, ol, ul, pre, blockquote {
+p, a, ol, ul, pre, blockquote, figcaption{
     font-size: 20px;
     line-height: 1.4;
 }
@@ -21,6 +23,7 @@ pre, blockquote {
     border-width: 0 0 0 4px;
     border-style: solid;
     padding-left: 20px;
+    border-color: #cccccc;
 }
 
 blockquote {
@@ -31,7 +34,63 @@ pre {
     overflow-x: auto;
 }
 
+div.topbar {
+    color: #f7f7f7;
+    background-color: #67d36e;
+    padding: 10px 30px;
+    border-style: solid;
+    border-width: 0 0 4px 0;
+    border-color: #cccccc;
+}
 
+div.title {
+    max-width: 900px;
+    margin: auto;
+}
 
+div.content {
+    padding: 10px 30px;
+    max-width: 900px;
+    margin: auto;
+}
 
+.content a {
+    color: black;
+}
 
+.content a:hover {
+    text-decoration: none;
+}
+
+hr {
+    color: #cccccc;
+    border-color: #cccccc;
+    border-style: solid;
+    border-width: 2px;
+}
+
+.topbar a {
+    color: #f7f7f7;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.topbar a:hover {
+    color: #cccccc;
+}
+
+figure {
+    margin: 0;
+}
+
+img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+figcaption {
+    background-color: #cccccc;
+    padding: 10px;
+    max-width: 100%;
+}
