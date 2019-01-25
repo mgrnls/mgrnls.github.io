@@ -37,10 +37,7 @@ pre {
 div.topbar {
     color: #f7f7f7;
     background-color: #67d36e;
-    padding: 10px 30px;
-    border-style: solid;
-    border-width: 0 0 4px 0;
-    border-color: #cccccc;
+    padding: 10px 15px;
 }
 
 div.title {
@@ -49,13 +46,13 @@ div.title {
 }
 
 div.content {
-    padding: 10px 30px;
+    padding: 10px 15px;
     max-width: 900px;
     margin: auto;
 }
 
 .content a {
-    color: black;
+    color: #67d36e;
 }
 
 .content a:hover {
