@@ -11,7 +11,7 @@ body {
 }
 
 p, a, ol, ul, pre, blockquote, figcaption{
-    font-size: 20px;
+    font-size: 1.1em;
     line-height: 1.4;
 }
 
@@ -22,7 +22,7 @@ body {
 pre, blockquote {
     border-width: 0 0 0 4px;
     border-style: solid;
-    padding-left: 20px;
+    padding-left: 1em;
     border-color: #cccccc;
 }
 
@@ -37,7 +37,7 @@ pre {
 div.topbar {
     color: #f7f7f7;
     background-color: #67d36e;
-    padding: 10px 15px;
+    padding: 0.7em 3%;
 }
 
 div.title {
@@ -46,7 +46,7 @@ div.title {
 }
 
 div.content {
-    padding: 10px 15px;
+    padding: 0.2em 3%;
     max-width: 900px;
     margin: auto;
 }
@@ -88,6 +88,6 @@ img {
 
 figcaption {
     background-color: #cccccc;
-    padding: 10px;
+    padding: 0.4em;
     max-width: 100%;
 }
