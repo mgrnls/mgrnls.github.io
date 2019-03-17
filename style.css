@@ -68,8 +68,9 @@ hr {
 
 .topbar a {
     color: #f7f7f7;
+    font-size: 1.1em;
     text-decoration: none;
-    font-weight: bold;
+    /*font-weight: bold;*/
 }
 
 .topbar a:hover {
@@ -90,4 +91,8 @@ figcaption {
     background-color: #cccccc;
     padding: 0.4em;
     max-width: 100%;
+}
+
+footer {
+  text-align: center;
 }
