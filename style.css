@@ -1,0 +1,38 @@
+a {
+    color: var(--green);
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+body {
+    max-width: 35em;
+    margin: 0 auto;
+    padding: 0 1em;
+    font-family: Arial, sans-serif;
+    --green: #3db545;
+}
+
+header {
+    border-bottom: 0.08em solid lightgray;
+}
+
+pre {
+    overflow-x: auto;
+}
+
+pre, blockquote {
+    border-left: 0.2em solid var(--green);
+    padding-left: 1em;
+    margin: 0;
+}
+
+.title {
+    font-size: 1.9em;
+}
+
+h1 {
+    font-size: 1.2em;
+}
