@@ -19,6 +19,10 @@ header {
     border-bottom: 0.08em solid lightgray;
 }
 
+footer {
+    border-top: 0.08em solid lightgray;
+}
+
 pre {
     overflow-x: auto;
 }
