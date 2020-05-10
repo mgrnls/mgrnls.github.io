@@ -46,5 +46,6 @@ h1 {
     body {
         color: white;
         background-color: #444444;
+        --green: #54ff60
     }
 }
