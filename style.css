@@ -13,7 +13,7 @@ body {
     margin: 0 auto;
     padding: 0 1em;
     font-family: Arial, sans-serif;
-    --green: #26d131;
+    --green: #82b74b;
 }
 
 header {
@@ -46,6 +46,6 @@ h1 {
     body {
         color: white;
         background-color: #444444;
-        --green: #54ff60
+        --green: #b5e7a0;
     }
 }
