@@ -4,18 +4,16 @@ a {
 }
 
 a:hover {
-    text-decoration: underline;
+    color: white;
+    background-color: blue;
 }
 
 body {
     max-width: 35em;
     margin: 0 auto;
     padding: 0 1em;
-    font-family: Arial, sans-serif;
-}
-
-header {
-    border-bottom: 0.08em solid black;
+    font-family: monospace;
+    line-height: 1.5;
 }
 
 footer {
@@ -27,17 +25,17 @@ pre {
 }
 
 pre, blockquote {
-    border-left: 0.2em solid black;
-    padding-left: 1em;
+    padding-left: 3em;
     margin: 0;
 }
 
 .title {
-    font-size: 1.9em;
+    text-transform: uppercase;
 }
 
 h1 {
     font-size: 1.2em;
+    border-bottom: 0.08em solid black;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -50,7 +48,12 @@ h1 {
         color: #6bf;
     }
 
-    header {
+    a:hover {
+        color: black;
+        background-color: #6bf;
+    }
+
+    h1 {
         border-bottom: 0.08em solid white;
     }
 
