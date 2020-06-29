@@ -40,3 +40,22 @@ pre, blockquote {
     padding-left: 2em;
     margin: 0;
 }
+
+@media (prefers-color-scheme: dark) {
+    body { 
+        background: black;
+        color: white;
+    }
+
+    a {
+        color: #6bf;
+    }
+
+    h1 {
+        border-bottom: 0.08em solid white;
+    }
+
+    footer {
+        border-top: 0.08em solid white;
+    }
+}
