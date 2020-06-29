@@ -1,6 +1,6 @@
 a {
-    text-decoration: none;
     color: blue;
+    text-decoration: none;
 }
 
 a:hover {
@@ -8,19 +8,28 @@ a:hover {
 }
 
 body {
+    font-family: monospace;
     max-width: 35em;
     margin: 0 auto;
     padding: 0 1em;
-    font-family: Arial, sans-serif;
-    line-height: 1.2;
 }
 
-footer {
-    border-top: 0.08em solid black;
+p {
+    font-size: 1em;
+    text-align: justify;
+    text-justify: inter-word;
 }
 
-header {
+h1 {
     border-bottom: 0.08em solid black;
+    font-size: 1em;
+    font-weight: normal;
+    line-height: 1.5em;
+}
+
+
+.title {
+    text-transform: uppercase;
 }
 
 pre {
@@ -28,38 +37,6 @@ pre {
 }
 
 pre, blockquote {
-    padding-left: 3em;
+    padding-left: 2em;
     margin: 0;
-}
-
-.title {
-    font-size: 1.8em;
-    line-height: 1em;
-}
-
-h1 {
-    font-size: 1.2em;
-}
-
-@media (prefers-color-scheme: dark) {
-    body { 
-        background: black;
-        color: white;
-    }
-
-    a {
-        color: #6bf;
-    }
-
-    a:hover {
-        text-decoration: underline;
-    }
-
-    header {
-        border-bottom: 0.08em solid white;
-    }
-
-    footer {
-        border-top: 0.08em solid white;
-    }
 }
