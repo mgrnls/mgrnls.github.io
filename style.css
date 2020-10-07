@@ -1,6 +1,6 @@
 a {
-    color: blue;
     text-decoration: none;
+    color: blue;
 }
 
 a:hover {
@@ -11,7 +11,7 @@ body {
     max-width: 35em;
     margin: 0 auto;
     padding: 0 1em;
-    font-family: sans-serif
+    font-family: Arial, sans-serif;
 }
 
 header {
@@ -27,7 +27,8 @@ pre {
 }
 
 pre, blockquote {
-    padding-left: 2em;
+    border-left: 0.2em solid black;
+    padding-left: 1em;
     margin: 0;
 }
 
@@ -37,6 +38,21 @@ pre, blockquote {
 
 h1 {
     font-size: 1.2em;
+}
+
+table {
+    border-collapse: collapse;
+    max-width: 100%;
+    margin: auto;
+}
+
+table, th, td {
+    border: 0.08em solid black;
+    font-size: 1em;
+}
+
+th, td {
+    padding: 0.3em;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -49,11 +65,18 @@ h1 {
         color: #6bf;
     }
 
+    header {
+        border-bottom: 0.08em solid white;
+    }
+
     footer {
         border-top: 0.08em solid white;
     }
 
-    header {
-        border-bottom: 0.08em solid white;
+    pre, blockquote {
+        border-left: 0.2em solid white;
+    }
+    table, th, td {
+        border: 0.08em solid white;
     }
 }
