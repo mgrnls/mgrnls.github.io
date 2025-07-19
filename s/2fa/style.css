@@ -1,0 +1,34 @@
+.box {
+    background-color: whitesmoke;
+    margin: 0.3em;
+    padding: 0.3em;
+    max-width: 20em;
+}
+
+.code {
+    font-size: 1em;
+}
+
+.name {
+    display: none;
+}
+
+#container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 30em;
+    margin: auto
+}
+
+#welcome {
+    text-align: center;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+
+#welcomeTitle {
+    font-weight: bold;
+}

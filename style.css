@@ -1,0 +1,10 @@
+body {
+    max-width: 40em;
+    margin: 0 auto;
+    padding: 0 1em;
+    font-family: "Times New Roman", Times, serif;
+}
+
+a {
+    color: blue;
+}

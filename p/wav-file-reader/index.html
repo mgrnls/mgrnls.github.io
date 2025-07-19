@@ -1,0 +1,184 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Reading WAV files in q</title>
+<meta name="description" content="My personal website.">
+<meta name="author" content="mgrnls">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<h1 class="title">Reading WAV files in q</h1>
+<p class="date"><i>7 October 2020</i></p>
+<p style="text-align: center;"><a href="/">mgrnls</a></p>
+<p>In this post, we are going to implement a very simple WAV file reader in just a few lines of q. This should teach us a little bit about how these files are stored as well as some interesting features of q.</p>
+<p>If you want to follow along with this post, you will probably want to download your own WAV file, which you can easily get from <a href="https://freesound.org">freesound</a>. I will be using a file called <code>bell.wav</code>, but anything should be fine, so long as it is a stereo WAV file with a bit depth of 16. We will use <a href="http://soundfile.sapp.org/doc/WaveFormat/">this</a> online resource as a reference for WAV files.</p>
+<p>WAV files are based on the <a href="https://en.wikipedia.org/wiki/Resource_Interchange_File_Format">resource interchange file format</a> (RIFF), which is a way of storing data in tagged chunks. All of these chunks have a four byte ASCII identifier at the beginning of the chunk, such as “data” or “RIFF”, followed by an unsigned, little-endian four byte integer, which tells us the length of the rest of the chunk, followed by the actual data. If the ASCII identifier is “RIFF” or “LIST”, then the data can contain sub-chunks, and has another four byte ASCII identifier telling us the format of the RIFF or LIST chunk. For a WAV file, we have a “WAVE” ASCII identifier followed by two sub-chunks, these are the “fmt” sub-chunk and the “data” sub-chunk, so a WAV file will look like the diagram below.</p>
+<pre><code>&quot;RIFF&quot;   ChunkSize   &quot;WAVE&quot;   fmtSubChunk   dataSubChunk
+4 ---&gt;   4 ------&gt;   4 ---&gt;   8 + x ----&gt;   8 + y -----&gt;
+8 ---------------&gt;   ChunkSize ------------------------&gt;</code></pre>
+<p>Both <code>fmtSubChunk</code> and <code>dataSubChunk</code> will have their own data chunk sizes, represented by <code>x</code> and <code>y</code> respectively in the diagram above, where the additional eight bytes come from the ASCII identifier and the length flag at the beginning of each sub-chunk.</p>
+<p>To read a binary file in q, we use the <code>read1</code> function, which takes as input a path to a WAV file and returns the file as a list of <a href="https://code.kx.com/q4m3/2_Basic_Data_Types_Atoms/#232-byte">bytes</a>. We read in our WAV file <code>bell.wav</code> and save it as a variable <code>bytes</code> as follows.</p>
+<pre><code>q)bytes: read1 `:bell.wav
+q)bytes
+0x52494646c6d3190057415645666d7420100..</code></pre>
+<p>As mentioned above, the first 12 bytes tell us what type of file we have read in, as well as its length. The first four bytes should read <code>0x52494646</code>, or “RIFF” when converted to ASCII. We could use an ASCII table to verify this ourselves, but luckily q can do this for us, all we have to do is cast the four bytes to a list of characters.</p>
+<pre><code>q)`char $ data til 4
+&quot;RIFF&quot;</code></pre>
+<p>The next four bytes tell us how long the rest of the file is. That is, it tells us the length of the entire file in bytes minus eight. This number is stored as an unsigned, little-endian four byte integer. In q, this corresponds to the integer type <code>i</code>, but since all integers in q are signed, we have to read in this integer as a long so that we don’t get a negative length. To do this, we write a small utility function that will convert a list of bytes to a long integer.</p>
+<pre><code>q)getLength: {sum x * prd each (til count x) #&#39; 256}
+q)getLength bytes 4 + til 4
+1692614</code></pre>
+<p>This tells us that the rest of the file is 1,692,614 bytes long. To check this is correct, we can compare it to the length of the whole file.</p>
+<pre><code>q)(count bytes) = 8 + getLength bytes 4 + til 4
+1b</code></pre>
+<p>The final four bytes in the initial 12 tells us the format of the file. (Remember that RIFF files can be used for more file formats.) We expect these final four bytes to be the four ASCII characters “WAVE”. Once again, we can just cast them to a list of characters, and we see that</p>
+<pre><code>q)`char $ bytes 8 + til 4
+&quot;WAVE&quot;</code></pre>
+<p>as expected. Now that we have confirmed that it is a WAV file, we are expecting to see two chunks for the remainder of the file, the first of which is the format chunk. We can confirm this by casting the first four bytes of this chunk to characters.</p>
+<pre><code>q)`char $ bytes 12 + til 4
+&quot;fmt &quot;</code></pre>
+<p>Again, the next four bytes tell us the size of the rest of the chunk.</p>
+<pre><code>q)getLength bytes 16 + til 4
+16</code></pre>
+<p>Now, the information contained in this chunk tells us a few things about the audio data in the next chunk. The table below shows the width and offset of each of these pieces of information.</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">Name</th>
+<th style="text-align: center;">Width</th>
+<th style="text-align: center;">Offset</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">Audio format</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">20</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Number of channels</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">22</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Sample rate</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">24</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Byte rate</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">28</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Block align</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">32</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Bits per sample</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">34</td>
+</tr>
+</tbody>
+</table>
+<p>The audio format is a short integer that tells us if the WAV file uses pulse-code modulation (PCM). For simplicity’s sake, we will assume that we are only using PCM audio, which would correspond to a value of 1 in the first 2 bytes.</p>
+<p>The byte rate is the number of bytes that bytes that are needed to represent one second of audio, including all channels. The block align is the number of bytes required to represent a single sample, including all channels.</p>
+<p>To retrieve this information and save it as a dictionary, we run the following lines.</p>
+<pre><code>q)fmt: bytes 20 22 24 28 32 34 40 + til each 2 2 4 4 2 2 4
+q)d: `pcm`nc`fs`br`ba`bps`size ! getLength each fmt
+q)d
+pcm | 1
+nc  | 2
+fs  | 44100
+br  | 176400
+ba  | 4
+bps | 16
+size| 1692472</code></pre>
+<p>The <code>size</code> field in the dictionary is simply the size of the next block. Next, we want to retrieve the actual audio data.</p>
+<pre><code>q)data: bytes 44 + til d `size
+q)data
+0x0600faff0400fbff0400fdff0700fcff060..</code></pre>
+<p>Samples for different channels are stored adjacently, so we need to separate the channels into separate lists. For 16 bit audio, which is all we are concerned with in this post, there are two bytes per sample per channel, so the samples would look something like below.</p>
+<pre><code>list of bytes: 1 1 2 2 1 1 2 2 1 1 2 2 ...
+sample number: &lt;- 1 -&gt; &lt;- 2 -&gt; &lt;- 3 -&gt;</code></pre>
+<p>We want to separate them into lists as follows.</p>
+<pre><code>  1 1     1 1     1 1
+  2 2     2 2     2 2
+&lt;- 1 -&gt; &lt;- 2 -&gt; &lt;- 3 -&gt;</code></pre>
+<p>To do this, we split the signal into individual samples.</p>
+<pre><code>q)samples: 0N 2 # data
+q)samples
+0x0600
+0xfaff
+0x0400
+0xfbff
+0x0400
+0xfdff
+0x0700
+..</code></pre>
+<p>Then, we pick out the different channels, and how we do this depends on the number of channels. For a mono signal, you just pick all the channels. For a stereo signal, one channel has all the even numbers and the other has all the odds. There are many ways to do this, but I’ve implemented it in the following way.</p>
+<pre><code>q)channels: samples {(til x) +\: x * til (count y) div x}[d `nc; samples]
+q)channels
+0x0600 0x0400 0x0400 0x0700 0x0600 0x..
+0xfaff 0xfbff 0xfdff 0xfcff 0xfbff 0x..</code></pre>
+<p>This generalises to audio with any number of channels. Next, we need to turn these lists of bytes into lists of floats. To convert any list of bytes to its representation in q, we can use the <a href="https://code.kx.com/q/ref/file-binary/">read binary</a> function <code>1:</code>, which is an infix operator that takes the list of bytes on the right hand side and a list containing two lists on the left hand side. The two lists are</p>
+<ol type="1">
+<li>a list of longs detailing the width of each datatype in the list, and</li>
+<li>a list of characters detailing the type of each datatype in the list.</li>
+</ol>
+<p>How you order these two lists determines whether your list of bytes is storing data as big-endian or little-endian, so</p>
+<pre><code>q)(enlist 4; enlist &quot;i&quot;) 1: 0x01000000
+16777216</code></pre>
+<p>tells us that we are storing the byte <code>0x01000000</code> as a big-endian integer, and</p>
+<pre><code>q)(enlist &quot;i&quot;; enlist 4) 1: 0x01000000
+1</code></pre>
+<p>tells us that we are storing the byte <code>0x01000000</code> as a little-endian integer. To convert the lists to lists of floats, we first get the number of bytes in each list and store it as a variable <code>n</code>.</p>
+<pre><code>q)n: count first channels
+q)n
+423118</code></pre>
+<p>Then we use the following line, which is essentially just a wrapper around <code>1:</code>, to convert each list of bytes to a list of signed shorts. The <code>raze</code> and <code>flip</code> are purely for fixing the formatting of the lists.</p>
+<pre><code>q)b: raze each flip each {(y # &quot;h&quot;; y # 2) 1: x}[; n] each raze each channels
+q)b
+6  4  4  7  6  6  11 6  8  9  4  7  8..
+-6 -5 -3 -4 -5 -4 -6 -8 -3 -9 -5 -8 -..</code></pre>
+<p>The final step is then to cast our list of shorts to a list of floats in the range [-1, 1). This requires a bit of care, as signed shorts can take any value from -32,768 to 32,767 inclusive, so to map it to the range [-1, 1), we have to divide by 32,768. However, q uses the value -32,768 as a null, so we will have to cast this value to -1 after division. This is done as follows.</p>
+<pre><code>q)-1 ^ b % 32768
+0.0001831055  0.0001220703  0.0001220..
+-0.0001831055 -0.0001525879 -9.155273..</code></pre>
+<p>Then, we tie it all together into one function that takes the path of the WAV file as input, and outputs a dictionary with the result as a list of channels, as well as the sample rate and an error flag. There is no need to return the number of channels, as this can be inferred from the number of channels in the list that we return. We also add some error checking into the function to make sure that the file actually is a WAV file. The final function is shown below.</p>
+<pre><code>read: {[path]
+  bytes: read1 path;
+  if[not (&quot;RIFF&quot; ~ `char $ bytes til 4) and &quot;WAVE&quot; ~ `char $ bytes 8 + til 4;
+    : `success`errmsg ! (0b; &quot;Not a WAV file.&quot;)];
+  if[(count 8 _ bytes) &lt;&gt; getLength bytes 4 + til 4;
+    : `success`errmsg ! (0b; &quot;Bad chunk size.&quot;)];
+  if[1 &lt;&gt; getLength bytes 20 + til 2;
+    :`success`errmsg ! (0b; &quot;Not PCM.&quot;)];
+  fmt: bytes 20 22 24 28 32 34 40 + til each 2 2 4 4 2 2 4;
+  d: `pcm`nc`fs`br`ba`bps`size ! getLength each fmt;
+  if[16 &lt;&gt; d `bps;
+    : `success`errmsg ! (0b; &quot;Only supports 16 bits per sample audio.&quot;)];
+  data: bytes 44 + til d `size;
+  samples: 0N 2 # data;
+  channels: samples {(til x) +\: x * til (count y) div x}[d `nc; samples];
+  n: count first channels;
+  b: raze each flip each {(y # &quot;h&quot;; y # 2) 1: x}[; n] each raze each channels;
+  `fs`data`success ! (d `fs; -1 ^ b % 32768; 1b)
+  };</code></pre>
+<p>So given a WAV file, we can do the following.</p>
+<pre><code>q)output: read `:bell.wav
+q)output
+fs     | 44100
+data   | (0.0001831055 0.0001220703 0.0001220703 0.000213623 0.0001831055 0.0..
+success| 1b
+q)output `data
+0.0001831055  0.0001220703  0.0001220703  0.000213623   0.0001831055  0.00018..
+-0.0001831055 -0.0001525879 -9.155273e-05 -0.0001220703 -0.0001525879 -0.0001..</code></pre>
+<p>So we have created a working WAV file reader in less than 20 lines of q, and without a single loop!</p>
+<p style="text-align: center;">*</p>
+</body>
+</html>
